@@ -1,0 +1,8 @@
+# Claude Documents
+CLAUDE.md
+
+# Python cache
+__pycache__/
+
+# Crawling data
+data/
