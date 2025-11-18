@@ -220,10 +220,10 @@ def save_to_json(books, filename):
         books (list): List of book dictionaries
         filename (str): Output filename (e.g., 'joy.json')
     """
-    # Create data directory if not exists
-    os.makedirs('data', exist_ok=True)
+    # Create data/books directory if not exists
+    os.makedirs('data/books', exist_ok=True)
 
-    filepath = os.path.join('data', filename)
+    filepath = os.path.join('data', 'books', filename)
 
     try:
         with open(filepath, 'w', encoding='utf-8') as f:
