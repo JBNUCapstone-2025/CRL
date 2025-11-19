@@ -116,8 +116,15 @@ def parse_book_item(item):
         if prod_link:
             book['detail_url'] = prod_link.get('href', '')
 
-        # Check if we got essential info
-        if 'title' in book and book['title']:
+        # Cover image URL (construct from ISBN)
+        if book.get('isbn'):
+            book['cover_image_url'] = f"https://contents.kyobobook.co.kr/sih/fit-in/300x0/pdt/{book['isbn']}.jpg"
+        else:
+            book['cover_image_url'] = ''
+
+        # Check if we got essential info (title and ISBN required)
+        # ISBN이 없으면 펀딩/이벤트 상품이므로 제외
+        if 'title' in book and book['title'] and book.get('isbn'):
             return book
         else:
             return None

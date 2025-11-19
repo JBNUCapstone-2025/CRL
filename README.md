@@ -15,7 +15,7 @@
 
 ### 2. 풍부한 데이터 수집
 - **기본 정보**: 제목, 저자, 출판사, 출판일, ISBN, 상품ID
-- **추가 정보**: 부제목, 정가, 태그 배열
+- **추가 정보**: 부제목, 정가, 태그 배열, 표지 이미지 URL (300x0)
 - **상세 링크**: 교보문고 상세 페이지 URL
 
 ### 3. 감정별 JSON 저장
@@ -48,15 +48,16 @@ CRL/
 ├── crawl_books.py              # 메인 크롤러 스크립트
 ├── requirements.txt            # 패키지 의존성
 ├── README.md                   # 프로젝트 문서 (이 파일)
+├── CLAUDE.md                   # Claude Code 프로젝트 가이드
 ├── .gitignore                  # Git 제외 목록
 └── data/                       # 크롤링 결과 저장 (git 제외)
     └── books/                  # 책 데이터 JSON 파일
         ├── joy.json            # 기쁨 (275개)
-        ├── excitement.json     # 설렘 (299개)
+        ├── excitement.json     # 설렘 (298개)
         ├── normal.json         # 보통 (299개)
-        ├── sadness.json        # 슬픔 (295개)
+        ├── sadness.json        # 슬픔 (294개)
         ├── anxiety.json        # 불안 (299개)
-        └── anger.json          # 분노 (289개)
+        └── anger.json          # 분노 (290개)
 ```
 
 ### 코드 구조 (crawl_books.py)
@@ -70,7 +71,7 @@ crawl_books.py
 │   └── DELAY_SECONDS           # 요청 간 딜레이 (2초)
 │
 ├── Parsing Functions           # 파싱
-│   └── parse_book_item()       # 책 정보 파싱 (10가지 항목)
+│   └── parse_book_item()       # 책 정보 파싱 (11가지 항목)
 │
 ├── Crawling Functions          # 크롤링
 │   └── crawl_keyword()         # 키워드 1개 크롤링
@@ -124,26 +125,27 @@ python crawl_books.py --full
 
 ---
 
-## 📊 크롤링 통계 (2025-11-18 최종)
+## 📊 크롤링 통계 (2025-11-19 최종)
 
 ### 감정별 수집량
 - **각 감정당**: 5개 키워드 × 2개 정렬(best, sale) × 3페이지 × 최대 20개/페이지 = 최대 600개
 - **중복 제거 후 실제 수집량**:
   - joy (기쁨): **275개**
-  - excitement (설렘): **299개**
+  - excitement (설렘): **298개**
   - normal (보통): **299개**
-  - sadness (슬픔): **295개**
+  - sadness (슬픔): **294개**
   - anxiety (불안): **299개**
-  - anger (분노): **289개**
-  - **총합: 1,756개 고유 책** (부제목, 정가, 태그 포함)
+  - anger (분노): **290개**
+  - **총합: 1,755개 고유 책** (부제목, 정가, 태그, 표지 이미지 URL 포함)
+  - **필터링**: ISBN 없는 펀딩/이벤트 상품 자동 제외
 
 ### 소요 시간
 - 1개 감정: 약 1~2분 (30번 요청 × 2초 딜레이)
-- 전체 6개 감정: 약 6~8분
+- 전체 6개 감정: 약 9~10분 (180번 요청 × 2초 딜레이 + 파싱 시간)
 
 ### 데이터 크기
-- 각 JSON 파일: 약 135~147KB (275~299개 책)
-- 전체 6개 JSON: 약 857KB (1,756개 책)
+- 각 JSON 파일: 약 162~177KB (275~299개 책, cover_image_url 포함)
+- 전체 6개 JSON: 약 1,030KB (1,755개 책, 표지 이미지 URL 포함)
 
 ---
 
@@ -174,7 +176,8 @@ python crawl_books.py --full
       "유머",
       "풍자"
     ],
-    "detail_url": "https://product.kyobobook.co.kr/detail/S000001829833"
+    "detail_url": "https://product.kyobobook.co.kr/detail/S000001829833",
+    "cover_image_url": "https://contents.kyobobook.co.kr/sih/fit-in/300x0/pdt/9791164451920.jpg"
   }
 ]
 ```
@@ -230,25 +233,11 @@ python crawl_books.py --full
 
 **결과:**
 - `data/joy.json` (275개)
-- `data/excitement.json` (299개)
+- `data/excitement.json` (298개)
 - `data/normal.json` (299개)
-- `data/sadness.json` (295개)
+- `data/sadness.json` (294개)
 - `data/anxiety.json` (299개)
-- `data/anger.json` (289개)
-
----
-
-## 🚀 다음 단계: RAG 시스템 구축 (예정)
-
-### Phase 2 목표
-크롤링된 데이터를 활용하여 감정 기반 책 추천 시스템 개발
-
-### 구축 예정 항목
-1. **JSON 데이터 로딩** - LangChain JSON Loader
-2. **텍스트 청크 분해** - 제목, 부제목, 태그 조합
-3. **임베딩 생성** - OpenAI/HuggingFace 임베딩
-4. **벡터 DB 저장** - FAISS/Chroma/Pinecone
-5. **LLM 연동** - 감정 분석 + 책 추천
+- `data/anger.json` (290개)
 
 ---
 
